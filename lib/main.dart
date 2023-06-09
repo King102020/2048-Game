@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
-import 'home.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() => runApp(new MyApp());
+import 'models/board_adapter.dart';
+import 'game.dart';
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
+void main() async {
+  //Allow only portrait mode on Android & iOS
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations(
+    [DeviceOrientation.portraitUp],
+  );
+  //Make sure Hive is initialized first and only after register the adapter.
+  await Hive.initFlutter();
+  Hive.registerAdapter(BoardAdapter());
+  runApp(const ProviderScope(
+    child: MaterialApp(
       title: '2048',
-      theme: new ThemeData(
-        primarySwatch: Colors.blue,
-        fontFamily: 'StarJedi'
-      ),
-      home: HomePage(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
+      home: Game(),
+    ),
+  ));
 }
-
